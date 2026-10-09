@@ -67,7 +67,7 @@ class TestGetFireGdpYearData(unittest.TestCase):
 
     def test_returns_matching_years_as_numeric_rows(self):
         rows = fire_gdp.get_fire_gdp_year_data(
-            "Agrofood_co2_emission.csv", "IMF_GDP_test.csv", "Afghanistan"
+            "Agrofood_co2_emission_test.csv", "IMF_GDP_test.csv", "Afghanistan"
         )
 
         self.assertEqual(rows[0], [2002, 0.0, 178756.0])

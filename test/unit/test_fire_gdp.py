@@ -1,13 +1,99 @@
+import csv
 import os
 import sys
+import tempfile
 import unittest
-import fire_gdp 
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'data'))
+import fire_gdp  # noqa: E402
+
+
+class TestGetData(unittest.TestCase):
+
+    def test_name_present(self):
+        with self.assertRaises(TypeError):
+            fire_gdp.get_data()
+
+    def test_file_found(self):
+        with self.assertRaises(FileNotFoundError):
+            fire_gdp.get_data("non_existent_file.csv")
+
+    def test_returns_rows(self):
+        x = fire_gdp.get_data("Agrofood_co2_emission_test.csv")
+        self.assertEqual(len(x), 5)
+
+    def test_returns_header(self):
+        x = fire_gdp.get_data(
+            "Agrofood_co2_emission_test.csv", return_header=True
+        )
+        self.assertEqual(len(x), 6)
+
+    def test_returns_rows_with_query(self):
+        x = fire_gdp.get_data(
+            "Agrofood_co2_emission_test.csv",
+            query_column="Year",
+            query_value="1990",
+        )
+        self.assertEqual(len(x), 1)
+        self.assertEqual(x[0][1], "1990")
 
 
 class TestGetColumnIndex(unittest.TestCase):
 
-    def test_name_present(self):
-        pass
+    def test_column_found(self):
+        header = fire_gdp.get_data(
+            "Agrofood_co2_emission_test.csv", return_header=True
+        )[0]
+        index = fire_gdp.get_column_index(header, "Year")
+        self.assertEqual(index, 1)
+
+    def test_column_not_found(self):
+        with self.assertRaises(ValueError):
+            fire_gdp.get_column_index(
+                fire_gdp.get_data(
+                    "Agrofood_co2_emission_test.csv", return_header=True
+                )[0],
+                "NonExistentColumn",
+            )
+
+    def test_no_header(self):
+        with self.assertRaises(ValueError):
+            fire_gdp.get_column_index([], "Year")
+
+
+class TestGetFireGdpYearData(unittest.TestCase):
+
+    def test_function_exists(self):
+        self.assertTrue(callable(fire_gdp.get_fire_gdp_year_data))
+
+    def test_returns_matching_years_as_numeric_rows(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            co2_file = os.path.join(temp_dir, "co2.csv")
+            gdp_file = os.path.join(temp_dir, "gdp.csv")
+            with open(co2_file, "w", newline="", encoding="utf-8") as file:
+                csv.writer(file).writerows([
+                    ["Area", "Year", "Forest fires"],
+                    ["Brazil", "2005", "2.5"],
+                    ["Brazil", "2006", "3.0"],
+                    ["Brazil", "2007", "4.0"],
+                    ["Brazil", "2008", ""],
+                ])
+            with open(gdp_file, "w", newline="", encoding="utf-8") as file:
+                csv.writer(file).writerows([
+                    ["Country", "2005", "2007", "2008"],
+                    ["Brazil", "2170584.50", "", "999.0"],
+                ])
+
+            rows = fire_gdp.get_fire_gdp_year_data(
+                co2_file, gdp_file, "Brazil"
+            )
+
+        self.assertEqual(rows, [[2005, 2.5, 2170584.5]])
+        self.assertTrue(all(type(row[0]) is int for row in rows))
+        self.assertTrue(all(type(row[1]) is float for row in rows))
+        self.assertTrue(all(type(row[2]) is float for row in rows))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,7 @@
+import csv
 import os
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'src'))
@@ -66,11 +68,28 @@ class TestGetFireGdpYearData(unittest.TestCase):
         self.assertTrue(callable(fire_gdp.get_fire_gdp_year_data))
 
     def test_returns_matching_years_as_numeric_rows(self):
-        rows = fire_gdp.get_fire_gdp_year_data(
-            "Agrofood_co2_emission_test.csv", "IMF_GDP_test.csv", "Afghanistan"
-        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            co2_file = os.path.join(temp_dir, "co2.csv")
+            gdp_file = os.path.join(temp_dir, "gdp.csv")
+            with open(co2_file, "w", newline="", encoding="utf-8") as file:
+                csv.writer(file).writerows([
+                    ["Area", "Year", "Forest fires"],
+                    ["Brazil", "2005", "2.5"],
+                    ["Brazil", "2006", "3.0"],
+                    ["Brazil", "2007", "4.0"],
+                    ["Brazil", "2008", ""],
+                ])
+            with open(gdp_file, "w", newline="", encoding="utf-8") as file:
+                csv.writer(file).writerows([
+                    ["Country", "2005", "2007", "2008"],
+                    ["Brazil", "2170584.50", "", "999.0"],
+                ])
 
-        self.assertEqual(rows[0], [2002, 0.0, 178756.0])
+            rows = fire_gdp.get_fire_gdp_year_data(
+                co2_file, gdp_file, "Brazil"
+            )
+
+        self.assertEqual(rows, [[2005, 2.5, 2170584.5]])
         self.assertTrue(all(type(row[0]) is int for row in rows))
         self.assertTrue(all(type(row[1]) is float for row in rows))
         self.assertTrue(all(type(row[2]) is float for row in rows))

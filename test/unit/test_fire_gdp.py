@@ -40,5 +40,9 @@ class TestGetColumnIndex(unittest.TestCase):
         with self.assertRaises(ValueError):
             fire_gdp.get_column_index(fire_gdp.get_data("Agrofood_co2_emission_test.csv", return_header=True)[0], "NonExistentColumn")
 
+    def test_no_header(self):
+        with self.assertRaises(ValueError):
+            fire_gdp.get_column_index([], "Year")
+
 if __name__ == '__main__':
     unittest.main()

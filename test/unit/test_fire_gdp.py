@@ -25,7 +25,10 @@ class TestGetColumnIndex(unittest.TestCase):
         x = fire_gdp.get_data("Agrofood_co2_emission_test.csv", return_header=True)
         self.assertEqual(len(x), 6)
            
-        
+    def test_returns_rows_with_query(self):
+        x = fire_gdp.get_data("Agrofood_co2_emission_test.csv", query_column="Year", query_value="1990")
+        self.assertEqual(len(x), 1)
+        self.assertEqual(x[0][1], "1990")
 
 if __name__ == '__main__':
     unittest.main()

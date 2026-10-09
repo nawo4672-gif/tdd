@@ -29,14 +29,16 @@ def get_data(file_name,
 
     with open(file_path, newline="", encoding="utf-8") as f:
         rows = [row for row in csv.reader(f) if row]
-    x=1
-    if return_header:
-        x=0
+    if query_column is not None and query_value is not None:
+        header = rows[0]
+        try:
+            col_index = header.index(query_column)
+        except ValueError:
+            raise ValueError(f"Column '{query_column}' not found in header")
+        return [row for row in rows[1:] if row[col_index] == query_value]
 
-    return [
-        
-        row for row in rows[x:]
-    ]
+    x = 0 if return_header else 1
+    return [row for row in rows[x:]]
 
 
 def get_column_index(header, column_name):

@@ -12,5 +12,9 @@ class TestGetColumnIndex(unittest.TestCase):
         with self.assertRaises(TypeError):
             fire_gdp.get_data()
 
+    def test_file_found(self):
+        with self.assertRaises(FileNotFoundError):
+            fire_gdp.get_data("non_existent_file.csv")
+
 if __name__ == '__main__':
     unittest.main()

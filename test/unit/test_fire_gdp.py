@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'data'))
 import fire_gdp
 
 
-class TestGetColumnIndex(unittest.TestCase):
+class TestGetData(unittest.TestCase):
 
     def test_name_present(self):
         with self.assertRaises(TypeError):
@@ -29,6 +29,16 @@ class TestGetColumnIndex(unittest.TestCase):
         x = fire_gdp.get_data("Agrofood_co2_emission_test.csv", query_column="Year", query_value="1990")
         self.assertEqual(len(x), 1)
         self.assertEqual(x[0][1], "1990")
+
+class TestGetColumnIndex(unittest.TestCase):
+
+    def test_column_found(self):
+        index = fire_gdp.get_column_index(fire_gdp.get_data("Agrofood_co2_emission_test.csv", return_header=True)[0], "Year")
+        self.assertEqual(index, 1)
+
+    def test_column_not_found(self):
+        with self.assertRaises(ValueError):
+            fire_gdp.get_column_index(fire_gdp.get_data("Agrofood_co2_emission_test.csv", return_header=True)[0], "NonExistentColumn")
 
 if __name__ == '__main__':
     unittest.main()

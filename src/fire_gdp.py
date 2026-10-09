@@ -42,7 +42,9 @@ def get_data(file_name,
 
 
 def get_column_index(header, column_name):
-    pass
+    if column_name not in header:
+        raise ValueError(f"Column '{column_name}' not found in header")
+    return header.index(column_name)
 
 
 def get_fire_gdp_year_data(co2_file, gdp_file, country):

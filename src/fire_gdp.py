@@ -29,11 +29,13 @@ def get_data(file_name,
 
     with open(file_path, newline="", encoding="utf-8") as f:
         rows = [row for row in csv.reader(f) if row]
+    x=1
+    if return_header:
+        x=0
 
-    header = rows[0]
-    
     return [
-        row for row in rows[1:]
+        
+        row for row in rows[x:]
     ]
 
 

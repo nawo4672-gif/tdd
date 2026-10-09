@@ -9,13 +9,17 @@ def get_data(file_name,
     if file_name is None:
         raise ValueError("file_name cannot be None")
 
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    project_root = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '..')
+    )
     candidate_paths = [
         file_name,
         os.path.join(project_root, file_name),
         os.path.join(project_root, 'data', file_name),
         os.path.join(project_root, 'test', file_name),
-        os.path.join(project_root, 'test', 'unit', file_name),
+        os.path.join(
+            project_root, 'test', 'unit', file_name
+        ),
     ]
 
     file_path = None
@@ -79,4 +83,3 @@ def get_fire_gdp_year_data(co2_file, gdp_file, country):
         result.append([int(year), float(forest_fires), float(gdp)])
 
     return result
-

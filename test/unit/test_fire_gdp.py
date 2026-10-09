@@ -44,5 +44,20 @@ class TestGetColumnIndex(unittest.TestCase):
         with self.assertRaises(ValueError):
             fire_gdp.get_column_index([], "Year")
 
+class TestGetFireGdpYearData(unittest.TestCase):
+
+    def test_function_exists(self):
+        self.assertTrue(callable(fire_gdp.get_fire_gdp_year_data))
+
+    def test_returns_matching_years_as_numeric_rows(self):
+        rows = fire_gdp.get_fire_gdp_year_data(
+            "Agrofood_co2_emission.csv", "IMF_GDP_test.csv", "Afghanistan"
+        )
+
+        self.assertEqual(rows[0], [2002, 0.0, 178756.0])
+        self.assertTrue(all(type(row[0]) is int for row in rows))
+        self.assertTrue(all(type(row[1]) is float for row in rows))
+        self.assertTrue(all(type(row[2]) is float for row in rows))
+
 if __name__ == '__main__':
     unittest.main()

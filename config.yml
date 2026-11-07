@@ -1,0 +1,12 @@
+co2_file: data/co2.csv
+gdp_file: data/gdp.csv
+
+countries:
+  - Brazil
+  - Australia
+  - Canada
+  - Indonesia
+
+plots:
+  - timeseries   # forest fires and GDP over time (twin axes)
+  - scatter      # forest fires vs GDP

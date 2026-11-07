@@ -1,0 +1,55 @@
+configfile: "config.yaml"
+
+COUNTRIES = config["countries"]
+PLOTS = config["plots"]
+
+wildcard_constraints:
+    country="[^/]+",
+    plot="|".join(PLOTS),
+
+
+rule all:
+    input:
+        # per-country data + plots
+        expand("results/{country}_fire_gdp.csv", country=COUNTRIES),
+        expand("results/plots/{country}_{plot}.png", country=COUNTRIES, plot=PLOTS),
+        # combined plots
+        expand("results/plots/all_countries_{plot}.png", plot=PLOTS),
+
+
+rule fire_gdp_year:
+    input:
+        co2=config["co2_file"],
+        gdp=config["gdp_file"],
+    output:
+        "results/{country}_fire_gdp.csv",
+    params:
+        country=lambda wildcards: wildcards.country,
+    log:
+        "logs/{country}_fire_gdp.log",
+    script:
+        "scripts/fire_gdp_year.py"
+
+
+rule plot_country:
+    input:
+        "results/{country}_fire_gdp.csv",
+    output:
+        "results/plots/{country}_{plot}.png",
+    log:
+        "logs/plot_{country}_{plot}.log",
+    script:
+        "scripts/plot_country.py"
+
+
+rule plot_combined:
+    input:
+        expand("results/{country}_fire_gdp.csv", country=COUNTRIES),
+    output:
+        "results/plots/all_countries_{plot}.png",
+    params:
+        countries=COUNTRIES,
+    log:
+        "logs/plot_all_{plot}.log",
+    script:
+        "scripts/plot_combined.py"

@@ -10,11 +10,10 @@ wildcard_constraints:
 
 rule all:
     input:
-        # per-country data + plots
         expand("results/{country}_fire_gdp.csv", country=COUNTRIES),
         expand("results/plots/{country}_{plot}.png", country=COUNTRIES, plot=PLOTS),
-        # combined plots
-        expand("results/plots/all_countries_{plot}.png", plot=PLOTS),
+        # combined plots now live in their own folder
+        expand("results/plots/combined/{plot}.png", plot=PLOTS),
 
 
 rule fire_gdp_year:
@@ -46,7 +45,7 @@ rule plot_combined:
     input:
         expand("results/{country}_fire_gdp.csv", country=COUNTRIES),
     output:
-        "results/plots/all_countries_{plot}.png",
+        "results/plots/combined/{plot}.png",
     params:
         countries=COUNTRIES,
     log:

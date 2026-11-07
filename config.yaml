@@ -1,5 +1,5 @@
-co2_file: data/co2.csv
-gdp_file: data/gdp.csv
+co2_file: data/Agrofood_co2_emission.csv
+gdp_file: data/IMF_GDP.csv
 
 countries:
   - Brazil

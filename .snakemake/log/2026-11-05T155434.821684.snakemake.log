@@ -1,0 +1,24 @@
+Assuming unrestricted shared filesystem usage.
+
+SNAKEMAKE
+=========
+  Date: 2026-11-05 15:54:34
+  Workflow ID: 389b7525-d506-4617-bc25-7416fe56bec5
+  Platform: macOS-14.7.4-arm64-arm-64bit-Mach-O
+  Host: MacBook-Air-161.local
+  User: nataliewoodland
+  Snakemake version: 9.27.1
+  Python version: 3.14.7 | packaged by conda-forge | (main, Sep  2 2026, 21:04:32) [Clang 20.1.8 ]
+  Command: /Users/nataliewoodland/miniforge3/envs/swe4s/bin/snakemake --cores 1
+  Snakefile: /Users/nataliewoodland/Desktop/Fall 26/Software engineering/lecture_code_forked/tdd/workflow/Snakefile
+  Base directory: /Users/nataliewoodland/Desktop/Fall 26/Software engineering/lecture_code_forked/tdd/workflow
+  Run directory: /Users/nataliewoodland/Desktop/Fall 26/Software engineering/lecture_code_forked/tdd
+  Working directory: /Users/nataliewoodland/Desktop/Fall 26/Software engineering/lecture_code_forked/tdd
+  Config file(s): []
+  Config MD5: 99914b932bd37a50b983c5e7c90ae93b
+
+Building DAG of jobs...
+MissingInputException in rule all in file "/Users/nataliewoodland/Desktop/Fall 26/Software engineering/lecture_code_forked/tdd/workflow/Snakefile", line 1:
+Missing input files for rule all:
+    affected files:
+        Agrofood_co2_emission_test.csv

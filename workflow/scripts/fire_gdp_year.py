@@ -1,48 +1,18 @@
-import os
 import csv
+import logging
 
 
-def get_data(file_name,
-             query_column=None,
-             query_value=None,
-             return_header=False):
-    if file_name is None:
-        raise ValueError("file_name cannot be None")
-
-    project_root = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), '..')
-    )
-    candidate_paths = [
-        file_name,
-        os.path.join(project_root, file_name),
-        os.path.join(project_root, 'data', file_name),
-        os.path.join(project_root, 'test', file_name),
-        os.path.join(
-            project_root, 'test', 'unit', file_name
-        ),
-    ]
-
-    file_path = None
-    for candidate in candidate_paths:
-        if os.path.exists(candidate):
-            file_path = candidate
-            break
-
-    if file_path is None:
-        raise FileNotFoundError(f"File '{file_name}' not found")
-
+def get_data(file_path, query_column=None, query_value=None, return_header=False):
     with open(file_path, newline="", encoding="utf-8") as f:
         rows = [row for row in csv.reader(f) if row]
+
     if query_column is not None and query_value is not None:
         header = rows[0]
-        try:
-            col_index = header.index(query_column)
-        except ValueError:
-            raise ValueError(f"Column '{query_column}' not found in header")
+        col_index = get_column_index(header, query_column)
         return [row for row in rows[1:] if row[col_index] == query_value]
 
-    x = 0 if return_header else 1
-    return [row for row in rows[x:]]
+    start = 0 if return_header else 1
+    return rows[start:]
 
 
 def get_column_index(header, column_name):
@@ -83,3 +53,19 @@ def get_fire_gdp_year_data(co2_file, gdp_file, country):
         result.append([int(year), float(forest_fires), float(gdp)])
 
     return result
+
+
+# --- Snakemake entry point ---
+logging.basicConfig(filename=snakemake.log[0], level=logging.INFO)
+
+data = get_fire_gdp_year_data(
+    snakemake.input.co2,
+    snakemake.input.gdp,
+    snakemake.params.country,
+)
+logging.info("%s: %d rows", snakemake.params.country, len(data))
+
+with open(snakemake.output[0], "w", newline="", encoding="utf-8") as f:
+    writer = csv.writer(f)
+    writer.writerow(["Year", "Forest_fires", "GDP"])
+    writer.writerows(data)
